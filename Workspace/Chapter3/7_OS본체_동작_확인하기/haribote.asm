@@ -1,0 +1,9 @@
+		ORG		0xc200
+		
+		MOV 		al,0x13			;모드(0x13:320x200x8bit 컬러,0x03:16색텍스트 80x25)
+		MOV		ah,0x00			;비디오BIOS에서 ah는 00으로
+		INT		0x10			;10인터럽트루틴=비디오BIOS
+
+fin:
+		HLT
+		JMP		fin

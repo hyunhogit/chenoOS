@@ -1,0 +1,1 @@
+..\..\..\Tools\z_tools\nask.exe helloos.asm helloos.bin

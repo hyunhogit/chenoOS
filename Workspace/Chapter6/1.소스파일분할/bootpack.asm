@@ -1,0 +1,78 @@
+[FORMAT "WCOFF"]
+[INSTRSET "i486p"]
+[OPTIMIZE 1]
+[OPTION 1]
+[BITS 32]
+	EXTERN	_init_pallette
+	EXTERN	_init_gdt
+	EXTERN	_init_idt
+	EXTERN	_sprintf
+	EXTERN	_init_screen
+	EXTERN	_init_mouse
+	EXTERN	_putString
+	EXTERN	_putMouse
+	EXTERN	_io_hlt
+[FILE "bootpack.c"]
+[SECTION .data]
+LC0:
+	DB	"HO Operating System:%d",0x00
+[SECTION .text]
+	GLOBAL	_HariMain
+_HariMain:
+	PUSH	EBP
+	MOV	EBP,ESP
+	PUSH	EDI
+	PUSH	ESI
+	PUSH	EBX
+	LEA	ESI,DWORD [-60+EBP]
+	SUB	ESP,308
+	LEA	EBX,DWORD [-316+EBP]
+	CALL	_init_pallette
+	CALL	_init_gdt
+	CALL	_init_idt
+	MOV	ECX,2
+	MOVSX	EAX,WORD [4084]
+	LEA	EDX,DWORD [-16+EAX]
+	MOV	EAX,EDX
+	CDQ
+	IDIV	ECX
+	MOVSX	EDX,WORD [4086]
+	SUB	EDX,44
+	MOV	DWORD [-320+EBP],EAX
+	MOV	EAX,EDX
+	PUSH	1
+	CDQ
+	IDIV	ECX
+	PUSH	LC0
+	MOV	EDI,EAX
+	PUSH	ESI
+	CALL	_sprintf
+	MOVSX	EAX,WORD [4086]
+	PUSH	EAX
+	MOVSX	EAX,WORD [4084]
+	PUSH	EAX
+	PUSH	DWORD [4088]
+	CALL	_init_screen
+	PUSH	10
+	PUSH	EBX
+	CALL	_init_mouse
+	ADD	ESP,32
+	PUSH	ESI
+	PUSH	0
+	PUSH	10
+	PUSH	140
+	MOVSX	EAX,WORD [4084]
+	PUSH	EAX
+	PUSH	DWORD [4088]
+	CALL	_putString
+	PUSH	EBX
+	PUSH	EDI
+	PUSH	DWORD [-320+EBP]
+	MOVSX	EAX,WORD [4084]
+	PUSH	EAX
+	PUSH	DWORD [4088]
+	CALL	_putMouse
+	ADD	ESP,44
+L2:
+	CALL	_io_hlt
+	JMP	L2

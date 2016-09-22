@@ -1,0 +1,75 @@
+	.file	"bootpack.c"
+	.data
+LC0:
+	.ascii "HO Operating System:%d\0"
+	.text
+	.balign 2
+.globl _HariMain
+	.def	_HariMain;	.scl	2;	.type	32;	.endef
+_HariMain:
+	pushl	%ebp
+	movl	%esp, %ebp
+	pushl	%edi
+	pushl	%esi
+	pushl	%ebx
+	leal	-60(%ebp), %esi
+	subl	$308, %esp
+	leal	-316(%ebp), %ebx
+	call	_init_pallette
+	call	_init_gdt
+	call	_init_idt
+	movl	$2, %ecx
+	movswl	4084,%eax
+	leal	-16(%eax), %edx
+	movl	%edx, %eax
+	cltd
+	idivl	%ecx
+	movswl	4086,%edx
+	subl	$44, %edx
+	movl	%eax, -320(%ebp)
+	movl	%edx, %eax
+	pushl	$1
+	cltd
+	idivl	%ecx
+	pushl	$LC0
+	movl	%eax, %edi
+	pushl	%esi
+	call	_sprintf
+	movswl	4086,%eax
+	pushl	%eax
+	movswl	4084,%eax
+	pushl	%eax
+	pushl	4088
+	call	_init_screen
+	pushl	$10
+	pushl	%ebx
+	call	_init_mouse
+	addl	$32, %esp
+	pushl	%esi
+	pushl	$0
+	pushl	$10
+	pushl	$140
+	movswl	4084,%eax
+	pushl	%eax
+	pushl	4088
+	call	_putString
+	pushl	%ebx
+	pushl	%edi
+	pushl	-320(%ebp)
+	movswl	4084,%eax
+	pushl	%eax
+	pushl	4088
+	call	_putMouse
+	addl	$44, %esp
+L2:
+	call	_io_hlt
+	jmp	L2
+	.def	_io_hlt;	.scl	2;	.type	32;	.endef
+	.def	_putMouse;	.scl	2;	.type	32;	.endef
+	.def	_putString;	.scl	2;	.type	32;	.endef
+	.def	_init_mouse;	.scl	2;	.type	32;	.endef
+	.def	_init_screen;	.scl	2;	.type	32;	.endef
+	.def	_sprintf;	.scl	2;	.type	32;	.endef
+	.def	_init_idt;	.scl	2;	.type	32;	.endef
+	.def	_init_gdt;	.scl	2;	.type	32;	.endef
+	.def	_init_pallette;	.scl	2;	.type	32;	.endef

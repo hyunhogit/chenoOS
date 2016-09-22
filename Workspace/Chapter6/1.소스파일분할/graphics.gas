@@ -1,0 +1,532 @@
+	.file	"graphics.c"
+	.data
+_table_rgb.0:
+	.byte	0
+	.byte	0
+	.byte	0
+	.byte	-1
+	.byte	0
+	.byte	0
+	.byte	0
+	.byte	-1
+	.byte	0
+	.byte	-1
+	.byte	-1
+	.byte	0
+	.byte	0
+	.byte	0
+	.byte	-1
+	.byte	-1
+	.byte	0
+	.byte	-1
+	.byte	0
+	.byte	-1
+	.byte	-1
+	.byte	-1
+	.byte	-1
+	.byte	-1
+	.byte	-58
+	.byte	-58
+	.byte	-58
+	.byte	-124
+	.byte	0
+	.byte	0
+	.byte	0
+	.byte	-124
+	.byte	0
+	.byte	-124
+	.byte	-124
+	.byte	0
+	.byte	0
+	.byte	0
+	.byte	-124
+	.byte	-124
+	.byte	0
+	.byte	-124
+	.byte	0
+	.byte	-124
+	.byte	-124
+	.byte	-124
+	.byte	-124
+	.byte	-124
+	.text
+	.balign 2
+.globl _init_pallette
+	.def	_init_pallette;	.scl	2;	.type	32;	.endef
+_init_pallette:
+	pushl	%ebp
+	movl	%esp, %ebp
+	pushl	$_table_rgb.0
+	pushl	$15
+	pushl	$0
+	call	_set_palette
+	leave
+	ret
+	.balign 2
+.globl _set_palette
+	.def	_set_palette;	.scl	2;	.type	32;	.endef
+_set_palette:
+	pushl	%ebp
+	movl	%esp, %ebp
+	pushl	%edi
+	pushl	%esi
+	pushl	%ebx
+	pushl	%ecx
+	movl	8(%ebp), %ebx
+	movl	12(%ebp), %edi
+	movl	16(%ebp), %esi
+	call	_io_load_eflags
+	movl	%eax, -16(%ebp)
+	call	_io_cli
+	pushl	%ebx
+	pushl	$968
+	call	_io_out8
+	cmpl	%edi, %ebx
+	popl	%eax
+	popl	%edx
+	jle	L7
+L9:
+	movl	-16(%ebp), %eax
+	movl	%eax, 8(%ebp)
+	leal	-12(%ebp), %esp
+	popl	%ebx
+	popl	%esi
+	popl	%edi
+	popl	%ebp
+	jmp	_io_store_eflags
+L7:
+	movb	(%esi), %al
+	incl	%ebx
+	shrb	$2, %al
+	movzbl	%al, %eax
+	pushl	%eax
+	pushl	$969
+	call	_io_out8
+	movb	1(%esi), %al
+	shrb	$2, %al
+	movzbl	%al, %eax
+	pushl	%eax
+	pushl	$969
+	call	_io_out8
+	movb	2(%esi), %al
+	shrb	$2, %al
+	addl	$3, %esi
+	movzbl	%al, %eax
+	pushl	%eax
+	pushl	$969
+	call	_io_out8
+	addl	$24, %esp
+	cmpl	%edi, %ebx
+	jle	L7
+	jmp	L9
+	.balign 2
+.globl _boxfill8
+	.def	_boxfill8;	.scl	2;	.type	32;	.endef
+_boxfill8:
+	pushl	%ebp
+	movl	%esp, %ebp
+	pushl	%edi
+	pushl	%esi
+	pushl	%ebx
+	pushl	%edi
+	pushl	%edi
+	movb	16(%ebp), %al
+	movl	24(%ebp), %ecx
+	movl	28(%ebp), %edi
+	movb	%al, -13(%ebp)
+	cmpl	32(%ebp), %ecx
+	jg	L22
+	movl	12(%ebp), %ebx
+	imull	%ecx, %ebx
+L20:
+	movl	20(%ebp), %edx
+	cmpl	%edi, %edx
+	jg	L24
+	movl	8(%ebp), %eax
+	addl	%ebx, %eax
+	leal	(%eax,%edx), %eax
+	movl	%eax, -20(%ebp)
+L19:
+	movl	-20(%ebp), %esi
+	movb	-13(%ebp), %al
+	incl	%edx
+	movb	%al, (%esi)
+	incl	%esi
+	movl	%esi, -20(%ebp)
+	cmpl	%edi, %edx
+	jle	L19
+L24:
+	incl	%ecx
+	addl	12(%ebp), %ebx
+	cmpl	32(%ebp), %ecx
+	jle	L20
+L22:
+	popl	%ebx
+	popl	%esi
+	popl	%ebx
+	popl	%esi
+	popl	%edi
+	popl	%ebp
+	ret
+	.balign 2
+.globl _init_screen
+	.def	_init_screen;	.scl	2;	.type	32;	.endef
+_init_screen:
+	pushl	%ebp
+	movl	%esp, %ebp
+	pushl	%edi
+	pushl	%esi
+	pushl	%ebx
+	pushl	%eax
+	pushl	%eax
+	movl	16(%ebp), %eax
+	movl	12(%ebp), %ebx
+	subl	$15, %eax
+	decl	%ebx
+	pushl	%eax
+	movl	%eax, -16(%ebp)
+	pushl	%ebx
+	pushl	$0
+	pushl	$0
+	pushl	$10
+	pushl	12(%ebp)
+	pushl	8(%ebp)
+	call	_boxfill8
+	movl	16(%ebp), %eax
+	decl	%eax
+	pushl	%eax
+	movl	16(%ebp), %eax
+	pushl	%ebx
+	subl	$14, %eax
+	pushl	%eax
+	pushl	$0
+	pushl	$8
+	pushl	12(%ebp)
+	pushl	8(%ebp)
+	call	_boxfill8
+	addl	$56, %esp
+	pushl	-16(%ebp)
+	pushl	%ebx
+	pushl	-16(%ebp)
+	pushl	$0
+	pushl	$7
+	pushl	12(%ebp)
+	pushl	8(%ebp)
+	call	_boxfill8
+	movl	16(%ebp), %edi
+	subl	$13, %edi
+	pushl	%edi
+	pushl	$30
+	pushl	%edi
+	pushl	$1
+	pushl	$7
+	pushl	12(%ebp)
+	pushl	8(%ebp)
+	call	_boxfill8
+	movl	16(%ebp), %eax
+	addl	$56, %esp
+	subl	$2, %eax
+	movl	%eax, -20(%ebp)
+	pushl	%eax
+	pushl	$1
+	pushl	%edi
+	pushl	$1
+	pushl	$7
+	pushl	12(%ebp)
+	pushl	8(%ebp)
+	call	_boxfill8
+	pushl	-20(%ebp)
+	pushl	$30
+	pushl	-20(%ebp)
+	pushl	$1
+	pushl	$15
+	pushl	12(%ebp)
+	pushl	8(%ebp)
+	call	_boxfill8
+	addl	$56, %esp
+	pushl	-20(%ebp)
+	pushl	$30
+	pushl	%edi
+	pushl	$30
+	pushl	$15
+	pushl	12(%ebp)
+	pushl	8(%ebp)
+	call	_boxfill8
+	movl	12(%ebp), %esi
+	movl	12(%ebp), %ebx
+	subl	$30, %esi
+	pushl	-20(%ebp)
+	subl	$2, %ebx
+	pushl	%ebx
+	pushl	-20(%ebp)
+	pushl	%esi
+	pushl	$7
+	pushl	12(%ebp)
+	pushl	8(%ebp)
+	call	_boxfill8
+	addl	$56, %esp
+	pushl	-20(%ebp)
+	pushl	%ebx
+	pushl	%edi
+	pushl	%ebx
+	pushl	$7
+	pushl	12(%ebp)
+	pushl	8(%ebp)
+	call	_boxfill8
+	pushl	%edi
+	pushl	%ebx
+	pushl	%edi
+	pushl	%esi
+	pushl	$15
+	pushl	12(%ebp)
+	pushl	8(%ebp)
+	call	_boxfill8
+	addl	$56, %esp
+	pushl	-20(%ebp)
+	pushl	%esi
+	pushl	%edi
+	pushl	%esi
+	pushl	$15
+	pushl	12(%ebp)
+	pushl	8(%ebp)
+	call	_boxfill8
+	leal	-12(%ebp), %esp
+	popl	%ebx
+	popl	%esi
+	popl	%edi
+	popl	%ebp
+	ret
+	.balign 2
+.globl _putFont8
+	.def	_putFont8;	.scl	2;	.type	32;	.endef
+_putFont8:
+	pushl	%ebp
+	movl	%esp, %ebp
+	pushl	%edi
+	pushl	%esi
+	pushl	%ebx
+	xorl	%ebx, %ebx
+	pushl	%eax
+	movl	20(%ebp), %edi
+	movl	28(%ebp), %esi
+	movb	24(%ebp), %cl
+L39:
+	leal	(%ebx,%edi), %eax
+	imull	12(%ebp), %eax
+	addl	8(%ebp), %eax
+	movl	%eax, %edx
+	addl	16(%ebp), %edx
+	cmpb	$0, (%ebx,%esi)
+	jns	L31
+	movb	%cl, (%edx)
+L31:
+	movb	(%ebx,%esi), %al
+	andl	$64, %eax
+	testb	%al, %al
+	je	L32
+	movb	%cl, 1(%edx)
+L32:
+	movb	(%ebx,%esi), %al
+	andl	$32, %eax
+	testb	%al, %al
+	je	L33
+	movb	%cl, 2(%edx)
+L33:
+	movb	(%ebx,%esi), %al
+	andl	$16, %eax
+	testb	%al, %al
+	je	L34
+	movb	%cl, 3(%edx)
+L34:
+	movb	(%ebx,%esi), %al
+	andl	$8, %eax
+	testb	%al, %al
+	je	L35
+	movb	%cl, 4(%edx)
+L35:
+	movb	(%ebx,%esi), %al
+	andl	$4, %eax
+	testb	%al, %al
+	je	L36
+	movb	%cl, 5(%edx)
+L36:
+	movb	(%ebx,%esi), %al
+	andl	$2, %eax
+	testb	%al, %al
+	je	L37
+	movb	%cl, 6(%edx)
+L37:
+	movb	(%ebx,%esi), %al
+	andl	$1, %eax
+	testb	%al, %al
+	je	L29
+	movb	%cl, 7(%edx)
+L29:
+	incl	%ebx
+	cmpl	$15, %ebx
+	jle	L39
+	popl	%eax
+	popl	%ebx
+	popl	%esi
+	popl	%edi
+	popl	%ebp
+	ret
+	.balign 2
+.globl _putString
+	.def	_putString;	.scl	2;	.type	32;	.endef
+_putString:
+	pushl	%ebp
+	movl	%esp, %ebp
+	pushl	%edi
+	pushl	%esi
+	pushl	%ebx
+	pushl	%eax
+	movl	28(%ebp), %ebx
+	movb	24(%ebp), %al
+	movb	%al, -13(%ebp)
+	movl	16(%ebp), %esi
+	movl	20(%ebp), %edi
+	cmpb	$0, (%ebx)
+	jne	L47
+L49:
+	leal	-12(%ebp), %esp
+	popl	%ebx
+	popl	%esi
+	popl	%edi
+	popl	%ebp
+	ret
+L47:
+	movsbl	(%ebx),%eax
+	sall	$4, %eax
+	incl	%ebx
+	addl	$_hankaku, %eax
+	pushl	%eax
+	movzbl	-13(%ebp), %eax
+	pushl	%eax
+	pushl	%edi
+	pushl	%esi
+	addl	$8, %esi
+	pushl	12(%ebp)
+	pushl	8(%ebp)
+	call	_putFont8
+	addl	$24, %esp
+	cmpb	$0, (%ebx)
+	jne	L47
+	jmp	L49
+	.data
+_mouse_cursor.1:
+	.ascii "**************.."
+	.ascii "*OOOOOOOOOOO*..."
+	.ascii "*OOOOOOOOOO*...."
+	.ascii "*OOOOOOOOO*....."
+	.ascii "*OOOOOOOO*......"
+	.ascii "*OOOOOOO*......."
+	.ascii "*OOOOOOO*......."
+	.ascii "*OOOOOOOO*......"
+	.ascii "*OOOO**OOO*....."
+	.ascii "*OOO*..*OOO*...."
+	.ascii "*OO*....*OOO*..."
+	.ascii "*O*......*OOO*.."
+	.ascii "**........*OOO*."
+	.ascii "*..........*OOO*"
+	.ascii "............*OO*"
+	.ascii ".............***"
+	.text
+	.balign 2
+.globl _init_mouse
+	.def	_init_mouse;	.scl	2;	.type	32;	.endef
+_init_mouse:
+	pushl	%ebp
+	movl	%esp, %ebp
+	pushl	%edi
+	pushl	%esi
+	xorl	%edi, %edi
+	pushl	%ebx
+	xorl	%ebx, %ebx
+	pushl	%eax
+	movb	12(%ebp), %al
+	movl	8(%ebp), %esi
+	movb	%al, -13(%ebp)
+L63:
+	xorl	%edx, %edx
+L62:
+	leal	(%edx,%edi), %eax
+	cmpb	$42, _mouse_cursor.1(%eax)
+	je	L68
+L59:
+	cmpb	$79, _mouse_cursor.1(%eax)
+	je	L69
+L60:
+	cmpb	$46, _mouse_cursor.1(%eax)
+	je	L70
+L57:
+	incl	%edx
+	cmpl	$15, %edx
+	jle	L62
+	incl	%ebx
+	addl	$16, %edi
+	cmpl	$15, %ebx
+	jle	L63
+	popl	%eax
+	popl	%ebx
+	popl	%esi
+	popl	%edi
+	popl	%ebp
+	ret
+L70:
+	movb	-13(%ebp), %cl
+	movb	%cl, (%eax,%esi)
+	jmp	L57
+L69:
+	movb	$7, (%eax,%esi)
+	jmp	L60
+L68:
+	movb	$0, (%eax,%esi)
+	jmp	L59
+	.balign 2
+.globl _putMouse
+	.def	_putMouse;	.scl	2;	.type	32;	.endef
+_putMouse:
+	pushl	%ebp
+	movl	%esp, %ebp
+	pushl	%edi
+	pushl	%esi
+	xorl	%edi, %edi
+	pushl	%ebx
+	xorl	%esi, %esi
+	subl	$12, %esp
+L81:
+	movl	24(%ebp), %eax
+	xorl	%ebx, %ebx
+	addl	%edi, %eax
+	movl	%eax, -20(%ebp)
+L80:
+	movl	20(%ebp), %eax
+	movl	16(%ebp), %edx
+	addl	%esi, %eax
+	addl	%ebx, %edx
+	imull	12(%ebp), %eax
+	addl	%edx, %eax
+	movl	8(%ebp), %ecx
+	movl	-20(%ebp), %edx
+	incl	%ebx
+	movb	(%edx), %dl
+	movb	%dl, (%eax,%ecx)
+	incl	-20(%ebp)
+	cmpl	$15, %ebx
+	jle	L80
+	incl	%esi
+	addl	$16, %edi
+	cmpl	$15, %esi
+	jle	L81
+	addl	$12, %esp
+	popl	%ebx
+	popl	%esi
+	popl	%edi
+	popl	%ebp
+	ret
+	.def	_io_store_eflags;	.scl	2;	.type	32;	.endef
+	.def	_io_out8;	.scl	2;	.type	32;	.endef
+	.def	_io_cli;	.scl	2;	.type	32;	.endef
+	.def	_io_load_eflags;	.scl	2;	.type	32;	.endef
+	.def	_set_palette;	.scl	2;	.type	32;	.endef
